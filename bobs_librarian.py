@@ -35,9 +35,9 @@ def api_get(path: str, params: dict[str, Any] | None = None) -> Any | None:
         return None
 
 
-# ----------------------------
-# Input helpers
-# ----------------------------
+# -------------------------------------------------------------------------
+# Input tools
+# -------------------------------------------------------------------------
 def prompt_int(prompt: str, min_value: int = 1) -> int | None:
     s = input(prompt).strip()
     if not s.isdigit():
@@ -49,9 +49,8 @@ def prompt_int(prompt: str, min_value: int = 1) -> int | None:
 def pause() -> None:
     input("\nPress Enter to continue...")
 
-
 # ----------------------------
-# Helper: normalize API list responses
+# normalize API list returns tool
 # ----------------------------
 def _extract_list(payload: Any) -> list[dict[str, Any]]:
     """Returns a flat list of dicts regardless of whether the API wraps the list in a key."""
@@ -66,7 +65,7 @@ def _extract_list(payload: Any) -> list[dict[str, Any]]:
 
 
 # ----------------------------
-# Helper: prompt for season + episode number
+# prompt for season + episode number tool
 # ----------------------------
 def prompt_season_episode() -> tuple[int, int] | None:
     season = prompt_int("S: ")
@@ -81,7 +80,7 @@ def prompt_season_episode() -> tuple[int, int] | None:
 
 
 # ----------------------------
-# Helper: fetch a single episode by season + episode number
+# fetch a single episode by season + episode number tool
 # ----------------------------
 def fetch_episode(season: int, epnum: int) -> dict[str, Any] | None:
     # API CALL: search episodes by season and episode number
@@ -92,6 +91,7 @@ def fetch_episode(season: int, epnum: int) -> dict[str, Any] | None:
             return ep
     return None
 
+# Menu Options (4 total)
 
 # ----------------------------
 # Option 1: list episodes (paged)
@@ -106,7 +106,7 @@ def list_episodes_paged() -> None:
                 return datetime.strptime((raw or "").strip(), fmt).strftime("%d_%b_%y")
             except ValueError:
                 pass
-        return (raw or "")[:9]
+        return (raw or "")[:9] # truncate to 9 chars if unknown format
 
     def row(se, name, date):
         name = str(name)
@@ -148,7 +148,7 @@ def list_episodes_paged() -> None:
                 fmt_date(str(ep.get("airDate") or "")),
             ))
 
-        cmd = input("\n[N]ext  [P]rev  [M]enu  [Q]uit: ").strip().lower()
+        cmd = input("\n[N]ext  [P]rev  [M]enu :").strip().lower()
         if cmd == "n":
             if page < total_pages - 1:
                 page += 1
@@ -161,8 +161,6 @@ def list_episodes_paged() -> None:
                 print("Already at first page.")
         elif cmd == "m":
             return
-        elif cmd == "q":
-            sys.exit(0)
         else:
             print("Invalid choice.")
 
@@ -206,7 +204,7 @@ def episode_details() -> None:
 # Option 3: gags by season + episode #
 # ----------------------------
 def episode_gags() -> None:
-    se = prompt_season_episode()
+    se = prompt_season_episode() 
     if se is None:
         pause()
         return
